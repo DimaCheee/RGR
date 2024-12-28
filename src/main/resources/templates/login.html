@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #4caf50, #45a049);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            box-sizing: border-box;
+            text-align: center;
+            color: #333;
+        }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+            color: #4caf50;
+        }
+
+        .error {
+            color: red;
+            margin-bottom: 15px;
+        }
+
+        .logout {
+            color: green;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button[type="submit"] {
+            background-color: #4caf50;
+            color: #fff;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .guest-button {
+            background-color: #808080;
+            color: #fff;
+        }
+
+        .guest-button:hover {
+            background-color: #666666;
+        }
+
+        .remember-me {
+            text-align: left;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h2>Login</h2>
+
+    <!-- Error Message for Failed Login -->
+    <div th:if="${param.error}" class="error">
+        ERROR 401: Failed to login.
+        <span th:if="${session['SPRING_SECURITY_LAST_EXCEPTION'] != null}">
+                Reason: <span th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}"></span>
+            </span>
+    </div>
+
+    <!-- Logout Success Message -->
+    <div th:if="${param.logout}" class="logout">
+        You have been logged out.
+    </div>
+
+    <form th:action="@{/login}" method="post">
+        <input type="text" id="username" name="username" required placeholder="Enter your username">
+        <input type="password" id="password" name="password" required placeholder="Enter your password">
+
+        <div class="remember-me">
+            <label for="remember-me">
+                <input type="checkbox" id="remember-me" name="remember-me"> Remember Me
+            </label>
+        </div>
+
+        <div class="button-container">
+            <button type="submit">Log in</button>
+            <button type="button" class="guest-button" onclick="window.location.href='/home'; return false;">Continue as Guest</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

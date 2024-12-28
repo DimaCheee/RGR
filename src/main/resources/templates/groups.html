@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Управління групами</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f8ff;
+      color: #333;
+    }
+
+    header {
+      background: linear-gradient(to right, #4caf50, #81c784);
+      color: #fff;
+      padding: 1.5rem 0;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    nav {
+      background-color: #4caf50;
+      padding: 0.5rem 0;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    nav a:hover {
+      background-color: #388e3c;
+    }
+
+    .main-content {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: #4caf50;
+      margin-bottom: 1.5rem;
+      font-weight: bold;
+    }
+
+    .form-container {
+      background: #f9fbe7;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    .form-group input:focus {
+      border-color: #4caf50;
+      outline: none;
+      box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+    }
+
+    button {
+      padding: 0.8rem 1.2rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-primary {
+      background-color: #4caf50;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background-color: #388e3c;
+    }
+
+    .btn-danger {
+      background-color: #f44336;
+      color: #fff;
+    }
+
+    .btn-danger:hover {
+      background-color: #d32f2f;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.5rem;
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #4caf50;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover {
+      background-color: #e8f5e9;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    footer {
+      margin-top: 2rem;
+      background: #4caf50;
+      color: #fff;
+      text-align: center;
+      padding: 1rem 0;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Управління групами</h1>
+  <nav>
+    <a href="/home">Головна</a>
+    <a href="/genres">Жанри</a>
+    <a href="/groups" class="active">Групи</a>
+    <a href="/songs">Пісні</a>
+  </nav>
+</header>
+
+<div class="main-content">
+  <!-- Повідомлення про помилки та успішні операції -->
+  <div th:if="${error}" style="color: red; margin-bottom: 1rem;">
+    <p th:text="${error}"></p>
+  </div>
+  <div th:if="${message}" style="color: green; margin-bottom: 1rem;">
+    <p th:text="${message}"></p>
+  </div>
+
+  <!-- Форма додавання/оновлення -->
+  <div class="form-container">
+    <h2 th:text="${group != null && group.id() != 0} ? 'Оновити групу' : 'Додати нову групу'"></h2>
+    <form th:action="@{/groups/save}" method="post">
+      <input type="hidden" name="id" th:value="${group?.id()}">
+
+      <div class="form-group">
+        <label for="name">Назва групи:</label>
+        <input id="name" type="text" name="name" th:value="${group?.name()}" required minlength="2" maxlength="100">
+      </div>
+
+      <div class="form-group">
+        <label for="members_count">Кількість учасників:</label>
+        <input id="members_count" type="number" name="members_count" th:value="${group?.memberCount()}" required min="1" max="100">
+      </div>
+
+      <button type="submit" class="btn-primary">Зберегти</button>
+      <button type="reset" class="btn-danger" th:if="${group != null && group.id() != 0}" onclick="window.location.href='/groups'">Скасувати</button>
+    </form>
+  </div>
+
+  <!-- Таблиця груп -->
+  <h2>Список груп</h2>
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Назва групи</th>
+      <th>Кількість учасників</th>
+      <th>Дії</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="group : ${groups}">
+      <td th:text="${group.id()}"></td>
+      <td th:text="${group.name()}"></td>
+      <td th:text="${group.memberCount()}"></td>
+      <td class="action-buttons">
+        <form th:action="@{/groups/search}" method="post">
+          <input type="hidden" name="searchId" th:value="${group.id()}">
+          <button type="submit" class="btn-primary">Редагувати</button>
+        </form>
+        <form th:action="@{/groups/delete}" method="post" onsubmit="return confirm('Ви впевнені, що хочете видалити цю групу?');">
+          <input type="hidden" name="deleteId" th:value="${group.id()}">
+          <button type="submit" class="btn-danger">Видалити</button>
+        </form>
+      </td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(groups)}">
+      <td colspan="4" style="text-align: center;">Груп не знайдено</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  &copy; 2024 Music Management System. Всі права захищено.
+</footer>
+</body>
+</html>
